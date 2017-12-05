@@ -25,6 +25,11 @@ public class UserServiceApplication extends Application<UserServiceConfiguration
     @Override
     public void initialize(final Bootstrap<UserServiceConfiguration> bootstrap) {
         super.initialize(bootstrap);
+        
+        //test
+        bootstrap.addCommand(new MyCommand());
+        //test
+
         bootstrap.addBundle(new DBIExceptionsBundle());
 
     }
@@ -32,12 +37,19 @@ public class UserServiceApplication extends Application<UserServiceConfiguration
     @Override
     public void run(final UserServiceConfiguration configuration,
                     final Environment environment) {
+
+        // encapsulate complicated setup logic in factories
         final DBIFactory factory = new DBIFactory();
         final DBI jdbi = factory.build(environment, configuration.getDataSourceFactory(), "postgresql");
         final UserDAO dao = jdbi.onDemand(UserDAO.class);
 
         // need to add some more implementation based on User design
 
+
+        final EventBusHealthCheck eventBusHealthCheck = new EventBusHealthCheck(eventBusURL);
+        environment.healthChecks().register("event-bus", eventBusHealthCheck);
+
+        environment.jersey().register(new UserResource(dao));
 
     }
 

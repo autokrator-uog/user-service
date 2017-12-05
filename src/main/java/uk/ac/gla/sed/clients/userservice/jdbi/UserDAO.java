@@ -13,6 +13,9 @@ public interface UserDAO {
     @SqlUpdate("DELETE users TABLE IF EXISTS")
     void deleteTableIfExists();
 
-    @SqlUpdate("INSERT INTO users (id) VALUES (:id)")
-    void createUser(@Bind("id") int userId);
+    @SqlUpdate("insert into users (id, name) values (:id, :name)")
+  	void insert(@Bind("id") int id, @Bind("name") String name);
+
+  	@SqlQuery("select name from users where id = :id")
+ 	String findNameById(@Bind("id") int id);
 }
