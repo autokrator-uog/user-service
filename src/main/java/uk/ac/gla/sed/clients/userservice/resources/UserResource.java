@@ -19,10 +19,6 @@ public class UserResource {
     @GET
     @Timed
     public User getUserDetails(@PathParam("userID") int userId) {
-        BigDecimal balance = dao.getBalance(UserId);
-        if (balance == null) {
-            throw new WebApplicationException(Response.Status.NOT_FOUND);
-        }
-        return new User(UserId, balance);
+        return new User(userId);
     }
 }
