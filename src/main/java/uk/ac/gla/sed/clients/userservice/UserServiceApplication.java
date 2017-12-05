@@ -10,7 +10,7 @@ import uk.ac.gla.sed.clients.userservice.core.EventProcessor;
 import uk.ac.gla.sed.clients.userservice.health.EventBusHealthCheck;
 import uk.ac.gla.sed.clients.userservice.jdbi.UserAccountDAO;
 import uk.ac.gla.sed.clients.userservice.jdbi.UserDAO;
-import uk.ac.gla.sed.clients.userservice.resources.UserResource;
+import uk.ac.gla.sed.clients.userservice.rest.resources.UserResource;
 
 
 public class UserServiceApplication extends Application<UserServiceConfiguration> {
