@@ -34,8 +34,10 @@ public class UserServiceApplication extends Application<UserServiceConfiguration
                     final Environment environment) {
         final DBIFactory factory = new DBIFactory();
         final DBI jdbi = factory.build(environment, configuration.getDataSourceFactory(), "postgresql");
-
         final UserDAO dao = jdbi.onDemand(UserDAO.class);
+
+        
+
 
     }
 

@@ -1,6 +1,6 @@
-# HelloWorld
+# UserService
 
-How to start the HelloWorld application
+How to start the UserService application
 ---
 
 1. Run `mvn clean install` to build your application
