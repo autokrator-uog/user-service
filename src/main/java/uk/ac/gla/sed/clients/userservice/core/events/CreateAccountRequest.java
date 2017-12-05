@@ -4,18 +4,20 @@ import com.eclipsesource.json.Json;
 import uk.ac.gla.sed.shared.eventbusclient.api.Event;
 
 public class CreateAccountRequest extends Event {
-	private String username;
-	private String id;
+	private String requestId;
 	
 	public CreateAccountRequest(Event e) {
 		super(e.getType(), Json.object().asObject().merge(e.getData()));
-        
-        this.username = data.getString("Username","");	
 
+		if(!type.equals("AccountCreationRequest")) {
+			throw new IllegalArgumentException("Error creating account request");
+		}
+		
+		this.requestId = data.getString("RequestID", "");
 	}
 
-	public String getAccountId() {
-		return this.id;
+	public String getRequestId() {
+		return this.requestId;
 	}
 
 }
