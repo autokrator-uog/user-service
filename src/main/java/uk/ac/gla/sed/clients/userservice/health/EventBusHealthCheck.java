@@ -1,4 +1,4 @@
-package uk.ac.gla.sed.clients.usersservice.health;
+package uk.ac.gla.sed.clients.userservice.health;
 
 import com.codahale.metrics.health.HealthCheck;
 import uk.ac.gla.sed.shared.eventbusclient.internal.websockets.wsWrapper;

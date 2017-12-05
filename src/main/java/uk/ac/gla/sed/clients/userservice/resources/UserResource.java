@@ -1,19 +1,28 @@
-package uk.ac.gla.sed.clients.Usersservice.resources;
+package uk.ac.gla.sed.clients.userservice.resources;
 
 import com.codahale.metrics.annotation.Timed;
-import uk.ac.gla.sed.clients.Usersservice.jdbi.UserDAO;
-import uk.ac.gla.sed.clients.Usersservice.rest.api.User;
 
+import io.dropwizard.jersey.params.LongParam;
+import uk.ac.gla.sed.clients.userservice.jdbi.UserAccountDAO;
+import uk.ac.gla.sed.clients.userservice.jdbi.UserDAO;
+import uk.ac.gla.sed.clients.userservice.api.User;
+
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import org.postgresql.core.Notification;
+
 @Path("/user/{userID}")
 @Produces(MediaType.APPLICATION_JSON)
 public class UserResource {
-    private UserDAO dao;
-    public UserResource(UserDAO dao) {
-        this.dao = dao;
+    private UserDAO daoUser;
+    private UserAccountDAO daoUserAccount;
+    public UserResource(UserDAO daoUser, UserAccountDAO daoUserAccount) {
+        this.daoUser = daoUser;
+        this.daoUserAccount = daoUserAccount;
     }
 
     @GET
@@ -33,6 +42,7 @@ public class UserResource {
     @Timed
     public Response addUser(@PathParam("user") LongParam userId,
                         @NotNull @Valid Notification notification) {
+							return null;
     	/*
 	        final long id = doa.add(userId.get());
 	        return Response.created(UriBuilder.fromResource(UserResource.class)

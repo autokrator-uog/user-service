@@ -1,21 +1,17 @@
-package uk.ac.gla.sed.clients.userservice.db;
+package uk.ac.gla.sed.clients.userservice.jdbi;
 
 import org.skife.jdbi.v2.sqlobject.Bind;
 import org.skife.jdbi.v2.sqlobject.SqlQuery;
 import org.skife.jdbi.v2.sqlobject.SqlUpdate;
 
-
-
 public interface UserDAO {
-    @SqlUpdate("CREATE users TABLE")
+    @SqlUpdate("CREATE TABLE users")
     void createUsersTable();
-
-    @SqlUpdate("DELETE users TABLE IF EXISTS")
+    
+    @SqlUpdate("DROP TABLE IF EXISTS users")
     void deleteTableIfExists();
 
-    @SqlUpdate("insert into users (id, name) values (:id, :name)")
-  	void insert(@Bind("id") int id, @Bind("name") String name);
+    @SqlUpdate("INSERT INTO users (username, password) values (:username, :password)")
+  	void createUser(@Bind("username") String username, @Bind("password") String password);
 
-  	@SqlQuery("select name from users where id = :id")
- 	String findNameById(@Bind("id") int id);
 }
