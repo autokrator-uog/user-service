@@ -12,6 +12,7 @@ import java.util.logging.Logger;
 public class CreateAccountHandler {
 	private static final Logger LOG = Logger.getLogger(CreateAccountHandler.class.getName());
 
+	private Integer lastUsed = 0;
     private Map<Integer, String> requestToUsernameMap = new HashMap<>();
 
 	private UserAccountDAO dao;
@@ -32,7 +33,7 @@ public class CreateAccountHandler {
 	}
 
 	public synchronized void requestCreationFor(String username) {
-        requestToUsernameMap.put(1, username);
+        requestToUsernameMap.put(lastUsed++, username);
         AccountCreationRequest event = new AccountCreationRequest("1");
 
         eventBusClient.sendEvent(event);
