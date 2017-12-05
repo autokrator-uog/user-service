@@ -21,8 +21,8 @@ public class PasswordHash {
         return new PasswordHash(digest);
     }
 
-    public static PasswordHash generateFromPassword(final int bcryptCost, final String password) {
-        final String salt = BCrypt.gensalt(bcryptCost);
+    public static PasswordHash generateFromPassword(final String password) {
+        final String salt = BCrypt.gensalt(5);
         return PasswordHash.fromDigest(BCrypt.hashpw(password, salt));
     }
 }

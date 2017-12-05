@@ -6,22 +6,22 @@ import java.util.List;
 
 public class User {
     private String username;
-    private List<Integer> userAccounts;
+    private List<Integer> accounts;
 
     public User() {}
 
-    public User(String username, List<Integer> userAccounts) {
+    public User(String username, List<Integer> accounts) {
         this.username = username;
-        this.userAccounts = userAccounts;
+        this.accounts = accounts;
     }
 
     @JsonProperty
-    public String getUserName() {
+    public String getUsername() {
         return username;
     }
 
     @JsonProperty
-    public List<Integer> getUserAccounts() {
-        return userAccounts;
+    public List<Integer> getAccounts() {
+        return accounts;
     }
 }

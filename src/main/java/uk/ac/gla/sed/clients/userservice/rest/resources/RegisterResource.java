@@ -2,16 +2,17 @@ package uk.ac.gla.sed.clients.userservice.rest.resources;
 
 import com.codahale.metrics.annotation.Timed;
 import uk.ac.gla.sed.clients.userservice.jdbi.UserDAO;
+import uk.ac.gla.sed.clients.userservice.rest.api.RegisterRequestBean;
 import uk.ac.gla.sed.clients.userservice.rest.internal.PasswordHash;
 
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.FormParam;
+import javax.ws.rs.*;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriInfo;
 
 @Path("/register")
+@Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
 public class RegisterResource {
     private UserDAO userDAO;
@@ -22,10 +23,17 @@ public class RegisterResource {
 
     @POST
     @Timed
-    public Response register(@FormParam("username") String username, @FormParam("password") String passwordUnhashed) {
-        PasswordHash hash = PasswordHash.generateFromPassword(20, passwordUnhashed);
-        userDAO.createUser(username, hash.getDigest());
+    public Response register(RegisterRequestBean registerRequest, @Context UriInfo uriInfo) {
+        // FutureTODO validate username/password input against policy
 
-        return Response.status(Response.Status.CREATED).build();
+        PasswordHash hash = PasswordHash.generateFromPassword(registerRequest.getPassword());
+        userDAO.createUser(registerRequest.getUsername(), hash.getDigest());
+
+        return Response.created(
+                uriInfo.getBaseUriBuilder()
+                        .path("user")
+                        .path(registerRequest.getUsername())
+                        .build()
+        ).build();
     }
 }

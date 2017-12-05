@@ -10,12 +10,12 @@ import uk.ac.gla.sed.clients.userservice.core.EventProcessor;
 import uk.ac.gla.sed.clients.userservice.health.EventBusHealthCheck;
 import uk.ac.gla.sed.clients.userservice.jdbi.UserAccountDAO;
 import uk.ac.gla.sed.clients.userservice.jdbi.UserDAO;
-import uk.ac.gla.sed.clients.userservice.rest.resources.UserResource;
+import uk.ac.gla.sed.clients.userservice.rest.resources.CreateAccountResource;
+import uk.ac.gla.sed.clients.userservice.rest.resources.RegisterResource;
+import uk.ac.gla.sed.clients.userservice.rest.resources.UserDetailsResource;
 
 
 public class UserServiceApplication extends Application<UserServiceConfiguration> {
-
-
 
     @Override
     public String getName() {
@@ -27,7 +27,6 @@ public class UserServiceApplication extends Application<UserServiceConfiguration
         super.initialize(bootstrap);
 
         bootstrap.addBundle(new DBIExceptionsBundle());
-
     }
 
     @Override
@@ -38,25 +37,25 @@ public class UserServiceApplication extends Application<UserServiceConfiguration
         // encapsulate complicated setup logic in factories
         final DBIFactory factory = new DBIFactory();
         final DBI jdbi = factory.build(environment, configuration.getDataSourceFactory(), "postgresql");
-        final UserDAO daoUser = jdbi.onDemand(UserDAO.class);
-        final UserAccountDAO daoUserAccount = jdbi.onDemand(UserAccountDAO.class);
 
-        // creating data
-        daoUser.deleteTableIfExists();
-        daoUser.createUsersTable();
-        daoUser.createUser("John", "password");
-        daoUser.createUser("Adam", "password");
-        
-        daoUserAccount.deleteTableIfExists();
-        daoUserAccount.createUsersAccountTable();
-        
+        final UserDAO userDAO = jdbi.onDemand(UserDAO.class);
+        final UserAccountDAO userAccountDAO = jdbi.onDemand(UserAccountDAO.class);
+
+        // creating dummy data
+        userAccountDAO.deleteTableIfExists();
+        userDAO.deleteTableIfExists();
+
+        userDAO.createUsersTable();
+        userAccountDAO.createUsersAccountTable();
+
+        userDAO.createUser("John", "password");
+        userDAO.createUser("Adam", "password");
 
 
         /* MANAGED LIFECYCLES */
         final EventProcessor eventProcessor = new EventProcessor(
                 eventBusURL,
-                daoUser,
-                daoUserAccount,
+                userAccountDAO,
                 environment.lifecycle().executorService("eventproessor").build()
         );
         environment.lifecycle().manage(eventProcessor);
@@ -65,8 +64,9 @@ public class UserServiceApplication extends Application<UserServiceConfiguration
         final EventBusHealthCheck eventBusHealthCheck = new EventBusHealthCheck(eventBusURL);
         environment.healthChecks().register("event-bus", eventBusHealthCheck);
 
-        environment.jersey().register(new UserResource(daoUser,daoUserAccount));
-
+        environment.jersey().register(new RegisterResource(userDAO));
+        environment.jersey().register(new UserDetailsResource(userDAO, userAccountDAO));
+        environment.jersey().register(new CreateAccountResource(eventProcessor.getCreateAccountHandler()));
     }
 
     public static void main(final String[] args) throws Exception {

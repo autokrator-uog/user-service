@@ -1,10 +1,9 @@
 package uk.ac.gla.sed.clients.userservice.core;
 
 import io.dropwizard.lifecycle.Managed;
-import uk.ac.gla.sed.clients.userservice.core.events.PendingTransaction;
-import uk.ac.gla.sed.clients.userservice.core.handlers.PendingTransactionHandler;
+import uk.ac.gla.sed.clients.userservice.core.events.AccountCreated;
+import uk.ac.gla.sed.clients.userservice.core.handlers.CreateAccountHandler;
 import uk.ac.gla.sed.clients.userservice.jdbi.UserAccountDAO;
-import uk.ac.gla.sed.clients.userservice.jdbi.UserDAO;
 import uk.ac.gla.sed.shared.eventbusclient.api.Event;
 import uk.ac.gla.sed.shared.eventbusclient.api.EventBusClient;
 
@@ -12,13 +11,16 @@ import java.util.concurrent.ExecutorService;
 
 public class EventProcessor implements Managed {
     private final EventBusClient eventBusClient;
-    private final PendingTransactionHandler pendingTransactionHandler;
+    private final CreateAccountHandler createAccountHandler;
     private final ExecutorService workers;
 
-    public EventProcessor(String eventBusURL, UserDAO daoUser, UserAccountDAO daoUserAccount, ExecutorService es) {
-        this.eventBusClient = new EventBusClient(eventBusURL);
-        
-        this.pendingTransactionHandler = new PendingTransactionHandler(dao, this.eventBusClient);
+    public EventProcessor(String eventBusURI, UserAccountDAO userAccountDAO, ExecutorService es) {
+        this(new EventBusClient(eventBusURI), userAccountDAO, es);
+    }
+
+    public EventProcessor(EventBusClient eventBusClient, UserAccountDAO userAccountDAO, ExecutorService es) {
+        this.eventBusClient = eventBusClient;
+        this.createAccountHandler = new CreateAccountHandler(userAccountDAO, eventBusClient);
         this.workers = es;
     }
 
@@ -32,3 +34,32 @@ public class EventProcessor implements Managed {
     public void stop() throws Exception {
         this.eventBusClient.stop();
     }
+
+    class ConsumeEventTask implements Runnable {
+        @Override
+        public void run() {
+            while(true) {
+                try {
+                    Event incomingEvent = eventBusClient.getIncomingEventsQueue().take();
+                    switch (incomingEvent.getType()) {
+                        case "AccountCreated":
+                            AccountCreated parsedEvent = new AccountCreated(incomingEvent);
+                            createAccountHandler.processAccountCreatedEvent(parsedEvent);
+                            break;
+                        default:
+                            // ignore
+                            break;
+                    }
+
+                } catch (InterruptedException interrupt) {
+                    System.out.println("ConsumeEventTask interrupted...");
+                    return;
+                }
+            }
+        }
+    }
+
+    public CreateAccountHandler getCreateAccountHandler() {
+        return createAccountHandler;
+    }
+}
