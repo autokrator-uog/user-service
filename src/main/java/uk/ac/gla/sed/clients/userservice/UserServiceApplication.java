@@ -33,6 +33,7 @@ public class UserServiceApplication extends Application<UserServiceConfiguration
     @Override
     public void run(final UserServiceConfiguration configuration,
                     final Environment environment) {
+    	String eventBusURL = configuration.getEventBusURL();
 
         // encapsulate complicated setup logic in factories
         final DBIFactory factory = new DBIFactory();
