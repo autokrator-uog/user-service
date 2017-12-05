@@ -56,6 +56,13 @@
             <systemPath>${project.basedir}/include/eventbusclient-${eventbusclient.version}.jar</systemPath>
         </dependency>
 
+        <!-- PASSWORD HASHING -->
+        <dependency>
+            <groupId>org.mindrot</groupId>
+            <artifactId>jbcrypt</artifactId>
+            <version>0.4</version>
+        </dependency>
+
         <!-- DATABASE -->
         <dependency>
             <groupId>io.dropwizard</groupId>
