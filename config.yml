@@ -12,7 +12,7 @@ database:
   password: userservice
 
   # the JDBC URL
-  url: jdbc:postgresql://127.0.0.1:5435/userservice
+  url: jdbc:postgresql://127.0.0.1:5432/userservice
 
 server:
   type: simple
