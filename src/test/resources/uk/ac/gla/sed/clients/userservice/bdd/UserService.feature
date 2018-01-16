@@ -5,10 +5,10 @@ Feature: User Service
     Background:
       Given there is a username Alice
 
-#    Scenario: Account creation
-#      When username Alice requests an account to be created
-#      Then an AccountCreationRequest event was created
-#      And the user is returned a 303 status code
+   Scenario: Account creation
+      When username Alice requests an account to be created
+      Then an AccountCreationRequest event was created
+      And the user is returned a 303 status code
 
 # MOVING TO SESSION SERVICE:
 #    Scenario: Log in
