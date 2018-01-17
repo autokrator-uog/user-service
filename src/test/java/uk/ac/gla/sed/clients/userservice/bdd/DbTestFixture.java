@@ -59,7 +59,7 @@ class DbTestFixture extends ExternalResource {
 
         // POSTGRES LIVE DB
         dataSourceFactory.setDriverClass("org.postgresql.Driver");
-        dataSourceFactory.setUrl("jdbc:postgresql://postgres:5435/userservice");
+        dataSourceFactory.setUrl("jdbc:postgresql://postgres:5432/userservice");
         dataSourceFactory.setUser("userservice");
         dataSourceFactory.setPassword("userservice");
 
