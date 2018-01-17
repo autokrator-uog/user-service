@@ -14,14 +14,16 @@ import uk.ac.gla.sed.clients.userservice.rest.resources.CreateAccountResource;
 import uk.ac.gla.sed.shared.eventbusclient.api.Event;
 import uk.ac.gla.sed.shared.eventbusclient.api.EventBusClient;
 
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriBuilder;
+import javax.ws.rs.core.UriInfo;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
-import static org.mockito.Mockito.atLeastOnce;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Matchers.anyObject;
+import static org.mockito.Mockito.*;
 
 public class UserStepDefs implements En {
 
@@ -32,6 +34,7 @@ public class UserStepDefs implements En {
     private DBI dbi;
     private EventBusClient mockedEventBusClient;
     private UserAccountDAO dao;
+    private Response returned;
 
     @Before
     public void setUp() throws Throwable {
@@ -41,14 +44,13 @@ public class UserStepDefs implements En {
         dbTestFixture.before();
         dbi = dbTestFixture.getDbi();
         dao = dbi.onDemand(UserAccountDAO.class);
-
         mockedEventBusClient = mock(EventBusClient.class);
         eventProcessor = new EventProcessor(mockedEventBusClient, dao, es);
     }
 
     private Event getProducedEventOrFail(String eventType) {
         ArgumentCaptor<Event> eventCaptor = ArgumentCaptor.forClass(Event.class);
-        verify(this.mockedEventBusClient, atLeastOnce()).sendEvent(eventCaptor.capture());
+        verify(this.mockedEventBusClient, atLeastOnce()).sendEvent(eventCaptor.capture(), anyObject());
 
         for (Event val : eventCaptor.getAllValues()) {
             if (val.getType().equals(eventType)) {
@@ -71,14 +73,20 @@ public class UserStepDefs implements En {
 
 
         When("^username (\\w+) requests an account to be created$", (String personName) -> {
-            CreateAccountHandler createAccountHandler = eventProcessor.getCreateAccountHandler();
-            createAccountHandler.requestCreationFor(personName);
+            CreateAccountResource testResource = new CreateAccountResource(eventProcessor.getCreateAccountHandler());
+
+            UriInfo testUri = mock(UriInfo.class);
+            when(testUri.getRequestUriBuilder()).thenReturn(UriBuilder.fromUri(""));
+            returned = testResource.createAccount(personName, testUri);
+            System.out.println(returned.toString());
         });
+
         Then("^an AccountCreationRequest event was created$", () -> {
             getProducedEventOrFail("AccountCreationRequest");
         });
-        And("^the user is returned a 303 status code$", () -> {
 
+        And("^the user is returned a 303 status code$", () -> {
+            assertEquals(returned.getStatus(), 303);
         });
     }
 }

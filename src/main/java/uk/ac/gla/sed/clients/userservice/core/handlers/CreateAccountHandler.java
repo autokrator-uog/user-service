@@ -36,7 +36,7 @@ public class CreateAccountHandler {
         requestToUsernameMap.put(lastUsed++, username);
         AccountCreationRequest event = new AccountCreationRequest("1");
 
-        eventBusClient.sendEvent(event);
+        eventBusClient.sendEvent(event, null);
     }
 
     public synchronized boolean isUserStillWaiting(String username) {
