@@ -78,7 +78,7 @@ public class UserStepDefs implements En {
             UriInfo testUri = mock(UriInfo.class);
             when(testUri.getRequestUriBuilder()).thenReturn(UriBuilder.fromUri(""));
             returned = testResource.createAccount(personName, testUri);
-            System.out.println(returned.toString());
+
         });
 
         Then("^an AccountCreationRequest event was created$", () -> {
