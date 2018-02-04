@@ -2,6 +2,7 @@ package uk.ac.gla.sed.clients.userservice.core.events;
 
 import com.eclipsesource.json.Json;
 
+import uk.ac.gla.sed.shared.eventbusclient.api.Consistency;
 import uk.ac.gla.sed.shared.eventbusclient.api.Event;
 
 public class AccountCreated extends Event {
@@ -9,7 +10,7 @@ public class AccountCreated extends Event {
 	private final Integer accountId;
 	
 	public AccountCreated(Event e) {
-		super(e.getType(), Json.object().asObject().merge(e.getData()));
+		super(e.getType(), Json.object().asObject().merge(e.getData()), e.getConsistency());
 	
 		if(!type.equals("AccountCreated")) {
 			throw new IllegalArgumentException("Error creating account");
