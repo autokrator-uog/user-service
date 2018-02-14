@@ -6,7 +6,9 @@ import uk.ac.gla.sed.clients.userservice.core.handlers.CreateAccountHandler;
 import uk.ac.gla.sed.clients.userservice.jdbi.UserAccountDAO;
 import uk.ac.gla.sed.shared.eventbusclient.api.Event;
 import uk.ac.gla.sed.shared.eventbusclient.api.EventBusClient;
+import uk.ac.gla.sed.shared.eventbusclient.internal.messages.RegisterMessage;
 
+import java.util.ArrayList;
 import java.util.concurrent.ExecutorService;
 
 public class EventProcessor implements Managed {
@@ -27,6 +29,10 @@ public class EventProcessor implements Managed {
     @Override
     public void start() throws Exception {
         this.eventBusClient.start();
+        ArrayList<String> interestedEvents = new ArrayList<>();
+        interestedEvents.add("AccountCreated");
+        RegisterMessage registration = new RegisterMessage("user", interestedEvents);
+        eventBusClient.register(registration);
         workers.submit(new ConsumeEventTask());
     }
 
@@ -61,5 +67,9 @@ public class EventProcessor implements Managed {
 
     public CreateAccountHandler getCreateAccountHandler() {
         return createAccountHandler;
+    }
+
+    public EventBusClient getEventBusClient() {
+        return eventBusClient;
     }
 }

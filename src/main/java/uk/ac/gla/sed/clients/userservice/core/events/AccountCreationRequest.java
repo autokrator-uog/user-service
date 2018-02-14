@@ -1,6 +1,7 @@
 package uk.ac.gla.sed.clients.userservice.core.events;
 
 import com.eclipsesource.json.Json;
+import uk.ac.gla.sed.shared.eventbusclient.api.Consistency;
 import uk.ac.gla.sed.shared.eventbusclient.api.Event;
 
 public class AccountCreationRequest extends Event {
@@ -8,7 +9,8 @@ public class AccountCreationRequest extends Event {
 	
 	public AccountCreationRequest(String requestId) {
 		super("AccountCreationRequest", Json.object().asObject()
-			.set("RequestID", requestId)
+			.set("RequestID", requestId),
+			new Consistency("createreq-" + requestId, "*")
 		);
 		this.requestId = requestId;
 	}
